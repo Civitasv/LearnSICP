@@ -1,0 +1,63 @@
+(define (squarter x)
+    (* x x))
+
+(define (squares sentence)
+    (if (empty? sentence)
+        '()
+        (se (squarter (first sentence))
+            (squares (butfirst sentence)))))
+
+(define (switch sentence)
+    (se (switch-first (first sentence))
+        (switch-rest (butfirst sentence))))
+
+(define (switch-first word)
+    (cond ((equal? word 'I) 'you)
+        ((equal? word 'i) 'you)
+        ((equal? word 'me) 'you)
+        ((equal? word 'Me) 'you)
+        ((equal? word 'you) 'I)
+        ((equal? word 'You) 'I)
+        (else word)))
+
+(define (switch-rest sentence)
+    (if (empty? sentence)
+        '()
+        (se (switch-one (first sentence))
+            (switch-rest (butfirst sentence)))))
+
+(define (switch-one word)
+    (cond ((equal? word 'I) 'you)
+        ((equal? word 'i) 'you)
+        ((equal? word 'me) 'you)
+        ((equal? word 'Me) 'you)
+        ((equal? word 'you) 'me)
+        ((equal? word 'You) 'me)
+        (else word)))
+(switch '(you told me that I should wake you up))
+
+(define (ordered? numbers)
+    (cond ((empty? (butfirst numbers)) #t)
+        (else (and (< (first numbers) (first (butfirst numbers))) 
+                    (ordered? (butfirst numbers))))))
+
+(define (ends-e sentence)
+    (if (empty? sentence)
+        '()
+        (se 
+            (if (equal? (last (first sentence)) 'e) 
+                (first sentence) 
+                '())
+            (ends-e (butfirst sentence)))))
+
+(define (test-and x)
+    (and (> x 1) ()))
+
+(define (dupls-removed sentence)
+    (if (empty? sentence)
+        '()
+        (se 
+            (if (member? (first sentence) (butfirst sentence))
+                '()
+                (first sentence))
+            (dupls-removed (butfirst sentence)))))
