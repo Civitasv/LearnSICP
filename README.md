@@ -1,0 +1,1 @@
+顺序：看书--上课--笔记--homework and lab
