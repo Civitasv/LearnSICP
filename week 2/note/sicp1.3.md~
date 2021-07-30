@@ -1,0 +1,45 @@
+# 1.3 Formulating Abstractions with Higher-Order Procedures
+
+> We have seen that procedures are, in effect, abstractions that describe compound operations on numbers independent of the particular numbers.
+
+Procedures that manipulate procedures are called *higher-order procedures*. This section shows how higher-order procedures can serve as powerful abstraction mechanisms, vastly increasing the expressive power of our language.
+
+## 1.3.1 Procedures as Arguments
+
+1. the sum of the integers from a through b:
+   
+   ```Lisp
+   (define (sum-integers a b)
+	   (if (> a b)
+		   0
+		   (+ a (sum-integers (+ a 1) b))))
+   ```
+2. the sum of the cubes of the integers from a through b:
+  
+   ```Lisp
+   (define (sum-cubes a b)
+	   (if (> a b)
+		   0
+		   (+ (cube a) (sum-cubes (+ a 1) b)))) 
+   ```
+
+this two procedures apparently share a common underlying pattern.
+
+```Lisp
+(define (<name> a b)
+  (if (> a b)
+      0
+    (+ (<term> a)
+       (<name> (<next> a) b))))
+```
+
+use Scheme, we can write as:
+
+```Lisp
+(define (sum term a next b)
+  (if (> a b)
+      0
+    (+ (term a)
+       (sum term (next a) next b))))
+```
+

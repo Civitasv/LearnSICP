@@ -1,0 +1,132 @@
+# 1.3 Formulating Abstractions with Higher-Order Procedures
+
+> We have seen that procedures are, in effect, abstractions that describe compound operations on numbers independent of the particular numbers.
+
+Procedures that manipulate procedures are called *higher-order procedures*. This section shows how higher-order procedures can serve as powerful abstraction mechanisms, vastly increasing the expressive power of our language.
+
+## 1.3.1 Procedures as Arguments
+
+1. the sum of the integers from a through b:
+   
+   ```Lisp
+   (define (sum-integers a b)
+       (if (> a b)
+           0
+           (+ a (sum-integers (+ a 1) b))))
+   ```
+2. the sum of the cubes of the integers from a through b:
+  
+   ```Lisp
+   (define (sum-cubes a b)
+       (if (> a b)
+           0
+           (+ (cube a) (sum-cubes (+ a 1) b)))) 
+   ```
+
+this two procedures apparently share a common underlying pattern.
+
+```Lisp
+(define (<name> a b)
+  (if (> a b)
+      0
+    (+ (<term> a)
+       (<name> (<next> a) b))))
+```
+
+use Scheme, we can write as:
+
+```Lisp
+(define (sum term a next b)
+  (if (> a b)
+      0
+    (+ (term a)
+       (sum term (next a) next b))))
+```
+
+## 1.3.2 Constructing Procedures Using lambda
+
+In using **sum** as in Section 1.3.1, it seems terribly awkward to have to define trival procedures such as **pi-term** and **pi-next** just so we can use them as arguments to our higher-order procedure.
+
+It would be more conveient to have a way to directly specify "the procedure that returns its input incremented by 4" and "the procedure that returns the reciprocal of its input times its input plus 2." We can do this by introducing the special form *lambda*.
+
+ie: `(lambda (x) (+ x 4))`
+
+In general, lambda is used to create procedures in the same way as *define*, except that no name is specified for the procedure.
+
+`(define (plus4 x) (+ x 4))` is equivalent to `(define plus4 (lambda (x) (+ x 4)))`
+
+### Using let to create local variables
+
+Another use of *lambda* is in creating local variables.
+
+```Lisp
+(define (f x y)
+  ((lambda (a b)
+     (+ (* x (square a))
+        (* y b)
+        (* a b)))
+   (+ 1 (* x y))
+   (- 1 y)))
+```
+
+This construct is so useful that there is a special form called *let* to make its use more convenient. Using *let*, the *f* procedure could be written as:
+
+```Lisp
+(define (f x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+    (+ (* x (square a))
+       (* y b)
+       (* a b))))
+```
+
+The general form of a *let* expression is:
+
+```Lisp
+(let ((<var1> <exp1>)
+      (<var2 <exp2>)
+      ...
+      (<varn> <expn>))
+
+      <body>)
+```
+
+The way this happens is that the *let* expression is interpreted as an alternate syntax for:
+
+```Lisp
+((lambda (<var1> <var2> ... <varn>)
+   <body>)
+ 
+ <exp1>
+ <exp2>
+ ...
+ <expn>)
+```
+
+No new machanism is required in the interpreter in order to prvide local variables. A *let* expression is simply syntactic sugar for the underlying *lambda* application.
+
+We ca see from this equivalence that the scope of a variable specified by a *let* expression is the body of the *let*. This implies that:
+
+a. *let* allows one to bind variables as locally as possible to where they are to be used. For example, if the value of *x* is 5, the value of the expression:
+
+```Lisp
+(+ (let ((x 3))
+     (+ x (* x 10)))
+   x)
+```
+
+is 38. Here, the x in the body of let is 3, so the valye of the let expression is 33. On the other hand, the x that is the second argument to the outermost + is still 5.
+
+b. The variables' values are computed outside the let. This matters when the expressions that provide the values for the local variables depend upon variables having the same names as the local variables themeseleves. For example, if the value of x is 2, the expression
+
+```Lisp
+(let ((x 3)
+      (y (+ x 2)))
+  (* x y))
+```
+
+will have the value 12 because, inside the body of the let, x will be 3 and y will be 4.
+
+## 1.3.3 Procedures as General Methods
+
+## 1.3.4 Procedures as Returned Values
