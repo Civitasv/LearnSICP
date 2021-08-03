@@ -10,7 +10,7 @@ Don’t panic if you have trouble with the half-interval example on pp. 67–68;
 
 ## Homework
 
-1. Abelson & Sussman, exercises 1.31(a), 1.32(a), 1.33, 1.40, 1.41, 1.43, 1.46
+Problem 1. Abelson & Sussman, exercises 1.31(a), 1.32(a), 1.33, 1.40, 1.41, 1.43, 1.46
 
 **1.31(a):**
 
@@ -92,4 +92,72 @@ c. the product of all the positive integers less than n
 
 **1.40:**
 
+```Lisp
+(define (cubic a b c)
+  (lambda (x) (+ (* x x x) (* a x x) (* b x) c)))
+```
 
+**1.41:**
+
+```Lisp
+(define (double f)
+  (lambda (x) (f (f x))))
+```
+
+**1.43:**
+
+```Lisp
+(define (compose f g)
+  (lambda (x) (f (g x))))
+
+(define (repeated f n)
+  (lambda (x)
+    (if (= n 0)
+        (lambda (x) x)
+        (compose f (repeated f (- n 1))))))
+```
+
+**1.46:**
+
+```Lisp
+(define (iterative-improve good-enough? improve)
+  (define (iterate guess)
+    (if (good-enough? guess)
+        guess
+        (iterate (improve guess))))
+  iterate)
+
+
+(define (fixed-point f first-guess)
+  ((iterate-improve (lambda (guess) (< (abs (- guess (f guess))) 0.001)) f) first-guess))
+```
+
+Problem 2. Last week you wrote procedures squares, that squared each number in its argument sentence, and saw pigl-sent, that pigled each word in its argument sentence. Generalize this pattern to create a higher-order procedure called every that applies an arbitrary procedure, given as an argument, to each word of an argument sentence. This procedure is used as follows:
+
+(every square ’(1 2 3 4)) -> (1 4 9 16)
+
+(every first ’(nowhere man)) -> (n m)
+
+```Lisp
+(define (every f sent)
+  (if (empty? sent)
+      '()
+      (se (f (first sent)) (every f (bf sent)))))
+```
+
+Problem 3. Extra for experts: find a way to express the *fact* procedure in a Scheme without any way to define global names.
+
+```Lisp
+(  (  (lambda (f) (lambda (n) (f f n)))
+      (lambda (fun x)
+	(if (= x 0)
+	    1
+	    (* x (fun fun (- x 1)))))  )
+   5)
+```
+
+```Lisp
+((lambda (f n) (if (= n 0) 1 (* n (f f (- n 1)))))
+ (lambda (f n) (if (= n 0) 1 (* n (f f (- n 1)))))
+ 5)
+```
