@@ -2,20 +2,20 @@
 
 Monday afternoon, Tuesday, or Wendesday morning
 
-This lab introduces a new special form, *lambda*.
+This lab introduces a new special form, _lambda_.
 
 Problem 1. just try learn lambda, easy.
 
-Problem 2. Write a procedure *substitute*.
+Problem 2. Write a procedure _substitute_.
 
-```Lisp
+```Scheme
 (define (substitute sent old new)
   (cond ((empty? sent) '())
         ((equal? (first sent) old) (se new (substitute (bf sent) old new)))
         (else (se (first sent) (substitute (bf sent) old new)))))
 ```
 
-Problem 3. 
+Problem 3.
 
 a. If (g) is a legal expression, then g takes ZERO arguments.
 b. If ((g) 1) has the value 3, then (g) has a PROCEDURE as its value.
@@ -25,14 +25,15 @@ Problem 4. definition:
 
 f: Any definition at all will do:
 
-```Lisp
+```Scheme
 (define f 'hello)	f is  hello
 (define f (+ 2 3) 	f is  5
 (define (f x) (+ x 7) 	f is  #<procedure f>
 ```
+
 (f) :This expression says to invoke f as a procedure with no arguments. For that to work, we must DEFINE f as a procedure with no arguments:
 
-```Lisp
+```Scheme
 define (f) 'hello)	(f) is  hello
 (define (f) (+ 2 3))	(f) is  5
 ;Each of these is shorthand for an explicit use of lambda:
@@ -42,7 +43,7 @@ define (f) 'hello)	(f) is  hello
 
 (f 3): This expression says to invoke f as a procedure with an argument, so we have to define it that way:
 
-```Lisp
+```Scheme
 (define (f x) (+ x 5))		(f 3) is  8
 (define (f x) 'hello)		(f 3) is  hello
 (define (f x) (word x x))	(f 3) is  33
@@ -52,8 +53,9 @@ define (f) 'hello)	(f) is  hello
 (define f (lambda (x) (word x x)))
 ```
 
-((f)): This expression says, first of all, to compute the subexpression	(f), which invokes f as a procedure with no arguments. Then, the result of that invocation must be another procedure, which is also invoked with no arguments.  So, we have to define f as a procedure that returns a procedure:
-```Lisp
+((f)): This expression says, first of all, to compute the subexpression (f), which invokes f as a procedure with no arguments. Then, the result of that invocation must be another procedure, which is also invoked with no arguments. So, we have to define f as a procedure that returns a procedure:
+
+````Scheme
 (define (f) (lambda () 'hello))	     ((f)) is  hello
 (define (f) (lambda () (+ 2 3)))     ((f)) is  5
 
@@ -70,7 +72,7 @@ define (f) 'hello)	(f) is  hello
 
 (((f)) 3): Sheesh!  F has to be a function.  When we invoke it with no arguments, we should get another function (let's call it G). When we invoke G with no arguments, we get a third function (call it H).  We have to be able to call H with the argument 3 and get some value.  We could spell this out as a sequence of definitions like this:
 
-```Lisp
+```Scheme
 (define (h x) (* x x))
 (define (g) h)
 (define (f) g)		(((f)) 3) is  9
@@ -78,16 +80,16 @@ define (f) 'hello)	(f) is  hello
 (define (f) (lambda () (lambda (x) (* x x))))
 ;or without the abbreviation:
 (define f (lambda () (lambda () (lambda (x) (* x x)))))
-```
+````
 
 Problem 5:
 
-```Lisp
+```Scheme
 (define (t f)
   (lambda (x) (f (f (f x)))) )
 ```
 
-```Lisp
+```Scheme
 ((t 1+) 0) -> 3
 ((t (t 1+)) 0) -> 9
 (((t t) 1+) 0) -> 27
@@ -95,7 +97,7 @@ Problem 5:
 
 Problem 6:
 
-```Lisp
+```Scheme
 ((t s) 0) -> 3
 ((t (t s)) 0) -> 9
 (((t t) s) 0) -> 27
@@ -103,7 +105,7 @@ Problem 6:
 
 Problem 7:
 
-```Lisp
+```Scheme
 (define (make-tester w)
   (lambda (x) (equal? x w)))
 ```

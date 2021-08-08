@@ -16,7 +16,7 @@ Problem 1. Abelson & Sussman, exercises 1.31(a), 1.32(a), 1.33, 1.40, 1.41, 1.43
 
 a. product definition:
 
-```Lisp
+```Scheme
 (define (product fn a next b)
         (if (> a b)
             1
@@ -25,14 +25,14 @@ a. product definition:
 
 b. factorial definition:
 
-```Lisp
+```Scheme
 (define (factorial n)
 	(product (lambda (x) x) 1 (lambda (x) (+ 1 x)) n))
 ```
 
 c. compute approximations to PI:
 
-```Lisp
+```Scheme
 (define (pi terms)
   (* 4 (product (lambda (x) (/ (* (- x 1) (+ x 1))
                                (* x x)))
@@ -45,7 +45,7 @@ c. compute approximations to PI:
 
 a. define accumulate
 
-```Lisp
+```Scheme
 (define (accumulate combiner null-value term a next b)
   (if (> a b)
       null-value
@@ -54,7 +54,7 @@ a. define accumulate
 
 b. use accumulate define sum and product:
 
-```Lisp
+```Scheme
 (define (sum fn a next b)
   (accumulate + 0 fn a next b))
 
@@ -66,7 +66,7 @@ b. use accumulate define sum and product:
 
 a. define filtered-accumulate:
 
-```Lisp
+```Scheme
 (define (filtered-accumulate PRED combiner null-value term a next b)
   (if (> a b)
       null-value
@@ -78,35 +78,35 @@ a. define filtered-accumulate:
 
 b. the sum of the squares of the prime numbers in the interval a to b.
 
-```Lisp
+```Scheme
 (define (sum-square-prime a b)
   (filtered-accumulate prime? + 0 (lambda (x) (* x x)) a (lambda (x) (+ x 1)) b))
 ```
 
 c. the product of all the positive integers less than n
 
-```Lisp
+```Scheme
 (define (product-positive n)
   (filtered-accumulate (lambda (x) (= 1 (gcd x n))) * 1 (lambda (x) x) 1 (lambda (x) (+ 1 x)) n))
 ```
 
 **1.40:**
 
-```Lisp
+```Scheme
 (define (cubic a b c)
   (lambda (x) (+ (* x x x) (* a x x) (* b x) c)))
 ```
 
 **1.41:**
 
-```Lisp
+```Scheme
 (define (double f)
   (lambda (x) (f (f x))))
 ```
 
 **1.43:**
 
-```Lisp
+```Scheme
 (define (compose f g)
   (lambda (x) (f (g x))))
 
@@ -119,7 +119,7 @@ c. the product of all the positive integers less than n
 
 **1.46:**
 
-```Lisp
+```Scheme
 (define (iterative-improve good-enough? improve)
   (define (iterate guess)
     (if (good-enough? guess)
@@ -129,7 +129,7 @@ c. the product of all the positive integers less than n
 
 
 (define (fixed-point f first-guess)
-  ((iterate-improve (lambda (guess) (< (abs (- guess (f guess))) 0.001)) f) first-guess))
+  ((iterative-improve (lambda (guess) (< (abs (- guess (f guess))) 0.001)) f) first-guess))
 ```
 
 Problem 2. Last week you wrote procedures squares, that squared each number in its argument sentence, and saw pigl-sent, that pigled each word in its argument sentence. Generalize this pattern to create a higher-order procedure called every that applies an arbitrary procedure, given as an argument, to each word of an argument sentence. This procedure is used as follows:
@@ -138,16 +138,16 @@ Problem 2. Last week you wrote procedures squares, that squared each number in i
 
 (every first ’(nowhere man)) -> (n m)
 
-```Lisp
+```Scheme
 (define (every f sent)
   (if (empty? sent)
       '()
       (se (f (first sent)) (every f (bf sent)))))
 ```
 
-Problem 3. Extra for experts: find a way to express the *fact* procedure in a Scheme without any way to define global names.
+Problem 3. Extra for experts: find a way to express the _fact_ procedure in a Lisp without any way to define global names.
 
-```Lisp
+```Scheme
 (  (  (lambda (f) (lambda (n) (f f n)))
       (lambda (fun x)
 	(if (= x 0)
@@ -156,7 +156,7 @@ Problem 3. Extra for experts: find a way to express the *fact* procedure in a Sc
    5)
 ```
 
-```Lisp
+```Scheme
 ((lambda (f n) (if (= n 0) 1 (* n (f f (- n 1)))))
  (lambda (f n) (if (= n 0) 1 (* n (f f (- n 1)))))
  5)

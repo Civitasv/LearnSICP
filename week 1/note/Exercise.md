@@ -2,7 +2,7 @@
 
 ## Exercise 1.1
 
-```Lisp
+```Scheme
 10 -> 10
 (+ 5 3 4) -> 12
 (- 9 1) -> 8
@@ -31,7 +31,7 @@ $$
 \frac{5+4+(2-(3-(6+\frac{4}{5})))}{3(6-2)(2-7)}
 $$
 
-```Lisp
+```Scheme
 (/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 2 7)))
 ```
 
@@ -39,7 +39,7 @@ $$
 
 Define a procedure that takes three numbers as arguments and returns the sum of the squares of the two larger numbers.
 
-```Lisp
+```Scheme
 (define (square x) ((* x x)))
 
 (define (sumTwoLargerNumbers x y z)
@@ -52,13 +52,13 @@ Define a procedure that takes three numbers as arguments and returns the sum of 
 
 ## Exercise 1.4
 
-*a-plus-abs-b* indicate a plus abs(b).
+_a-plus-abs-b_ indicate a plus abs(b).
 
 ## Exercise 1.5
 
 Ben Bitdiddle has invented a test to determine whether the interpreter he is faced with is using applicative-order evaluation or normal-order evaluation. He defines the following two procedures:
 
-```Lisp
+```Scheme
 (define (p) (p))
 (define (test x y)
     (if (= x 0) 0 y))
@@ -72,11 +72,11 @@ Ben Bitdiddle has invented a test to determine whether the interpreter he is fac
 
 ## Exercise 1.6
 
-*new-if* follow the applicative order, so then-clause and else-clause always run even predicate return true.
+_new-if_ follow the applicative order, so then-clause and else-clause always run even predicate return true.
 
 ## Exercise 1.7
 
-```Lisp
+```Scheme
 ; Modify version
 (define (good-enough? guess x)
     (< (abs (- guess (improve guess x))) 0.001))
