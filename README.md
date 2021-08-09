@@ -6,7 +6,7 @@ Book: [Sturcture and interpretation of computer programs](https://web.mit.edu/al
 
 CS 61A Homepage: <https://people.eecs.berkeley.edu/~bh/61a-pages/>
 
-## Steps:
+## Steps
 
 1. read sicp: <https://web.mit.edu/alexmv/6.037/sicp.pdf>
 2. watch teaching video online: <https://archive.org/details/ucberkeley-webcast-PL3E89002AA9B9879E>
