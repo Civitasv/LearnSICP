@@ -4,6 +4,8 @@
     
     ; 1, 0, -1 represent customer won tie and lost.
     (define (twenty-one strategy)
+        ; secondly, the dealer choose cards or not
+        ; finnaly, compare the dealer's hand vs the customer's
         (define (play-dealer customer-hand dealer-hand-so-far rest-of-deck)
             (cond ((> (best-total dealer-hand-so-far) 21) 1)
 	              ((< (best-total dealer-hand-so-far) 17)
@@ -11,7 +13,8 @@
 	              ((< (best-total customer-hand) (best-total dealer-hand-so-far)) -1)
 	              ((= (best-total customer-hand) (best-total dealer-hand-so-far)) 0)
 	              (else 1)))
-
+        
+        ; firstly, the customer choose cards or not
         (define (play-customer customer-hand-so-far dealer-up-card rest-of-deck)
             (cond ((> (best-total customer-hand-so-far) 21) -1)
     	          ((strategy customer-hand-so-far dealer-up-card)
@@ -31,6 +34,7 @@
         (define (shuffle deck size)
             (define (move-card in out which)
                 (if (= which 0)
+                    ; then the first of cards is shuffed, and then shuffer others
                     (se (first in) (shuffle (se (bf in) out) (- size 1)))
                     (move-card (bf in) (se (first in) out) (- which 1)) ))
             (if (= size 0)
