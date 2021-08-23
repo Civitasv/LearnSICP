@@ -9,17 +9,4 @@
 
     (define (valentine-2 customer-hand-so-far dealer-up-card)
         ((suit-strategy 'h (stop-at 19) (stop-at 17)) customer-hand-so-far dealer-up-card))
-
-    
-    (define (vowel? letter) (member? letter '(a e i o u)))
-
-    (define (syllables word)
-      (cond ((empty? word) 0)
-            ((vowel? (first word))
-             (cond ((empty? (bf word)) 1)
-                   ((vowel? (first (bf word))) (syllables (bf word)))
-                   (else (+ 1 (syllables (bf word))))))
-            (else (syllables (bf word)))))
-
-    (syllables 'aardvark)
 )
