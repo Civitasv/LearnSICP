@@ -24,7 +24,7 @@ Problem 1:
 
 Problem2:
 
-The expression `(car ''abracadabra)` is equaivalent to `car ('(quote avracadabra))`, so the interpreter prints back `quote`.
+The expression `(car ''abracadabra)` is equaivalent to `(car (quote (quote avracadabra)))`, so the interpreter prints back `quote`.
 
 Problem 3:
 
@@ -37,7 +37,7 @@ Problem 3:
   (helper lst '()))
 
 (define (deep-reverse lst)
-  (cond ((null? lst) '())
-        ((list? lst) (reverse (map deep-reverse lst)))
-        (else lst)))
+  (if (list? lst)
+      (map deep-reverse (reverse lst))
+      lst))
 ```

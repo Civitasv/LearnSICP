@@ -27,8 +27,8 @@
   (helper lst '()))
 
 (define (deep-reverse lst)
-  (cond ((null? lst) '())
-        ((list? lst) (reverse (map deep-reverse lst)))
-        (else lst)))
+  (if (list? lst) 
+      (map deep-reverse (reverse lst))
+      lst))
 (reverse '(1 2 3))
 (deep-reverse '((1 2) (2 3) (3 4)))

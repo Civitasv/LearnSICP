@@ -14,11 +14,11 @@ value: '(1 (2 (3 4)))
 
 box-and-pointer structure:
 
-[box-and-pointer structure](../images/2.24-1.png)
+![box-and-pointer structure](../images/2.24-1.png)
 
 tree structure:
 
-[tree structure](../images/2.24-2.png)
+![tree structure](../images/2.24-2.png)
 
 **2.26:**
 
@@ -50,46 +50,33 @@ b. define `total-weight`
 
 ```Scheme
 (define (total-weight mobile)
-  (if (null? mobile)
-      0
-      (let ((left-pair? (pair? (branch-structure (left-branch mobile))))
-            (right-pair? (pair? (branch-structure (right-branch mobile)))))
-        (cond ((and left-pair? right-pair?)
-               (+ (total-weight (branch-structure (left-branch mobile)))
-                  (total-weight (branch-structure (right-branch mobile)))))
-              ((and left-pair? (not right-pair?))
-               (+ (total-weight (branch-structure (left-branch mobile)))
-                  (branch-structure (right-branch mobile))))
-              ((and (not left-pair?) right-pair?)
-               (+ (total-weight (branch-structure (right-branch mobile)))
-                  (branch-structure (left-branch mobile))))
-              (else (+ (branch-structure (left-branch mobile))
-                       (branch-structure (right-branch mobile))))))))
+  (+ (branch-weight (left-branch mobile))
+     (branch-weight (right-branch mobile))))
+
+(define (branch-weight branch)
+  (let ((struct (branch-structure branch)))
+    (if (number? struct)
+        struct
+        (total-weight struct))))
 ```
 
 c.
 
 ```Scheme
 (define (branch-torque branch)
-  (cond ((null? branch) 0)
-        ((pair? (branch-structure branch)) (* (branch-length branch) (total-weight (branch-structure branch))))
-        (else (* (branch-length branch) (branch-structure branch)))))
+  (* (branch-length branch) (branch-weight branch)))
 
 (define (mobile-balanced? mobile)
-  (if (null? mobile)
-      #t
-      (let ((left-pair? (pair? (branch-structure (left-branch mobile))))
-            (right-pair? (pair? (branch-structure (right-branch mobile))))
-            (left-branch-torque (branch-torque (left-branch mobile)))
-            (right-branch-torque (branch-torque (right-branch mobile))))
-        (cond ((not (= left-branch-torque right-branch-torque)) #f)
-              ((and left-pair? right-pair?)
-               (and (mobile-balanced? (left-branch mobile)) (mobile-balanced? (right-branch mobile))))
-              ((and left-pair? (not right-pair?))
-               (mobile-balanced? (left-branch mobile)))
-              ((and (not left-pair?) right-pair?)
-               (mobile-balanced? (right-branch mobile)))
-              (else #t)))))
+  (and (= (branch-torque (left-branch mobile))
+          (branch-torque (right-branch mobile)))
+       (branch-balanced? (left-branch mobile))
+       (branch-balanced? (right-branch mobile))))
+
+(define (branch-balanced? branch)
+  (let ((struct (branch-structure branch)))
+    (if (number? struct)
+        #t
+        (mobile-balanced? struct))))
 ```
 
 d.
@@ -199,7 +186,7 @@ finally, back to the first, rest equals to `(() (3) (2) (2 3))`, so the subsets 
 **2.38:**
 
 ```Scheme
-(fold-right / 1 (list 1 2 3)) ; 2/3
+(fold-right / 1 (list 1 2 3)) ; 3/2
 (fold-left / 1 (list 1 2 3)) ; 1/6
 (fold-right list nil (list 1 2 3)) ; (1 (2 (3 ())))
 (fold-left list nil (list 1 2 3)) ; (((() 1) 2) 3)
@@ -210,17 +197,15 @@ op must to be communicative to guarantee that `fold-right` and `fold-left` produ
 **2.54:**
 
 ```Scheme
-(define (equal? lst1 lst2)
-  (cond ((and (null? lst1) (null? lst2)) #t)
-        ((and (null? lst1) (not (null? lst2))) #f)
-        ((and (not (null? lst1)) (null? lst2)) #f)
-        ((and (list? (car lst1)) (list? (car lst2)))
-         (and (equal? (car lst1) (car lst2))
-              (equal? (cdr lst1) (cdr lst2))))
-        ((and (symbol? (car lst1)) (symbol? (car lst2)))
-         (and (eq? (car lst1) (car lst2))
-              (equal? (cdr lst1) (cdr lst2))))
-        (else #f)))
+(define (equal? a b)
+  (cond ((and (symbol? a) (symbol? b)) (eq? a b))
+	((or (symbol? a) (symbol? b)) #f)
+	((and (number? a) (number? b)) (= a b))       ;; not required but
+	((or (number? a) (number? b)) #f)             ;; suggested in footnote
+	((and (null? a) (null? b)) #t)
+	((or (null? a) (null? b)) #f)
+	((equal? (car a) (car b)) (equal? (cdr a) (cdr b)))
+	(else #f)))
 ```
 
 Problem 2: See File [calc](calculator/calc.rkt)
@@ -252,7 +237,7 @@ Problem 2: See File [calc](calculator/calc.rkt)
           '()
           (error "MISSING SYMBOL" symbol))
       (let ((left (left-branch tree)))
-        (if (memq symbol (symbols tree))
+        (if (member? symbol (symbols tree))
             (cons 0 (encode-symbol symbol left))
             (cons 1 (encode-symbol symbol (right-branch tree)))))))
 ```
@@ -295,6 +280,192 @@ We need only one bits to encode the most frequent symbol, and `n-1` bits to enco
 
 **2.72:**
 
-pass
+Since only one branch is followed at each step of the encoding, the number of steps is at worst the depth of the tree. And the time per step, as the exercise points out, is determined by the call to MEMBER to check whether the symbol is in the left branch. If there are N symbols, it's easy to see that the worst case is N^2 time, supposing the tree is very unbalanced [in 2.71 I said that an unbalanced tree isn't a problem, but that's in determining the size of the encoded message, not the time required for the encoding] so its depth is N, and we have to check at most N symbols at each level.
 
-**Regroup:**
+In reality, though, it's never that bad. The whole idea of Huffman coding is that the most often used symbols are near the top of the tree. For the power-of-two weights of exercise 2.71, the average number of steps to encode each symbol is 2, so the time is 2N rather than N^2. (The worst-case time is for the least frequently used symbol, which still takes N^2 time, but that symbol only occurs once in the entire message!) We could make a small additional optimization by rewriting ENCODE-SYMBOL to make sure that at each branch node in the tree it creates, the left branch has fewer symbols than the right branch.
+
+**Regroup:** (TODO)
+
+```Scheme
+;; Programming by example:
+
+;; Of course many approaches are possible; here's mine:
+
+(define (regroup pattern)
+
+  ;; my feeble attempt at data abstraction:
+  ;; regroup0 returns two values in a pair
+
+  (define reg-result cons)
+  (define reg-function car)
+  (define reg-minsize cdr)
+
+  ;; Assorted trivial utility routines
+
+  (define (firstn num ls)
+    (if (= num 0)
+	'()
+	(cons (car ls) (firstn (- num 1) (cdr ls))) ))
+
+  (define (too-short? num ls)
+    (cond ((= num 0) #f)
+	  ((null? ls) #t)
+	  (else (too-short? (- num 1) (cdr ls))) ))
+
+  (define (safe-bfn num ls)
+    (cond ((null? ls) '())
+	  ((= num 0) ls)
+	  (else (safe-bfn (- num 1) (cdr ls))) ))
+
+  (define (firstnum pattern)
+    (if (symbol? pattern)
+	pattern
+	(firstnum (car pattern)) ))
+
+  (define (and-all preds)
+    (cond ((null? preds) #t)
+	  ((car preds) (and-all (cdr preds)))
+	  (else #f) ))
+
+  ;; Okay, here's the real thing:
+
+  ;; There are three kinds of patterns: 1, (1 2), and (1 2 ...).
+  ;; Regroup0 picks one of three subprocedures for them.
+  ;; In each case, the return value is a pair (function . min-size)
+  ;; where "function" is the function that implements the pattern
+  ;; and "min-size" is the minimum length of a list that can be
+  ;; given as argument to that function.
+
+  (define (regroup0 pattern)
+    (cond ((number? pattern) (select pattern))
+	  ((eq? (last pattern) '...) (infinite (bl pattern)))
+	  (else (finite pattern)) ))
+
+
+  ;; If the pattern is a number, the function just selects the NTH element
+  ;; of its argument.  The min-size is N.
+
+  (define (select num)
+      (reg-result
+       (cond ((= num 1) car)	; slight optimization
+	     ((= num 2) cadr)
+	     (else (lambda (ls) (list-ref ls (- num 1)))) )
+       num))
+
+;; If the pattern is a list of patterns without ..., the function
+  ;; concatenates into a list the results of calling the functions
+  ;; that we recursively derive from the subpatterns.  The min-size
+  ;; is the largest min-size required for any subpattern.
+
+  (define (finite pattern)
+    (let ((subgroups (map regroup0 pattern)))
+      (reg-result
+       (lambda (ls) (map (lambda (subg) ((reg-function subg) ls)) subgroups))
+       (apply max (map reg-minsize subgroups)) ) ))
+
+  ;; Now for the fun part.  If the pattern is a list ending with ... then
+  ;; we have to build a map-like recursive function that sticks the result
+  ;; of computing a subfunction on the front of a recursive call for some
+  ;; tail portion of the argument list.  There are a few complications:
+
+  ;; The pattern is allowed to give any number of examples of its subpattern.
+  ;; For instance, ((1 2) ...), ((1 2) (3 4) ...), and ((1 2) (3 4) (5 6) ...)
+  ;; all specify the same function.  But ((1 2) (3 4 5) ...) is different from
+  ;; those.  So we must find the smallest leading sublist of the pattern such
+  ;; that the rest of the pattern consists of equivalent-but-shifted copies,
+  ;; where "shifted" means that each number of the copy differs from the
+  ;; corresponding number of the original by the same amount.  (3 4) is a
+  ;; shifted copy of (1 2) but (3 5) isn't.  Once we've found the smallest
+  ;; appropriate leading sublist, the rest of the pattern is unused, except
+  ;; as explained in the following paragraph.
+
+  ;; Once we have the pattern for the repeated subfunction, we need to know
+  ;; how many elements of the argument to chop off for the recursive call.
+  ;; If the pattern contains only one example of the subfunction, the "cutsize"
+  ;; is taken to be the same as the min-size for the subfunction.  For example,
+  ;; in the pattern ((1 2) ...) the cutsize is 2 because 2 is the highest
+  ;; number used.  But if there are two or more examples, the cutsize is the
+  ;; amount of shift between examples (which must be constant if there are
+  ;; more than two examples), so in ((1 2) (3 4) ...) the cutsize is 2 but in
+  ;; ((1 2) (2 3) ...) it's 1.  In ((1 2) (2 3) (5 6) ...) the shift isn't
+  ;; constant, so this is taken as one example of a long subpattern rather
+  ;; than as three examples of a short one.
+
+  ;; Finally, if the subpattern is a single number or list, as in (1 3 ...)
+  ;; (that's two examples of a one-number pattern) or ((1 2) ...), then we
+  ;; can cons the result of the subfunction onto the recursive call.  But if
+  ;; the subpattern has more than one element, as in (1 2 4 ...) or
+  ;; ((1 2) (3 4 5) ...), then we must append the result of the subfunction
+  ;; onto the recursive call.
+
+  ;; INFINITE does all of this.  FINDSIZE returns a pair containing two
+  ;; values: the number of elements in the smallest-appropriate-leading-sublist
+  ;; and, if more than one example is given, the shift between them, i.e., the
+  ;; cutsize.  (If only one example is given, #T is returned
+  ;; in the pair instead of the cutsize.)  PARALLEL? checks to see if a
+  ;; candidate smallest-appropriate-leading-sublist is really appropriate,
+  ;; i.e., the rest of the pattern consists of equivalent-but-shifted copies.
+  ;; The return value from PARALLEL? is the amount of shift (the cutsize).
+
+  (define (infinite pattern)
+
+    (define (findsize size len)
+
+      (define (parallel? subpat rest)
+	(let ((cutsize (- (firstnum rest)
+			  (firstnum subpat) )))
+
+	  (define (par1 togo rest delta)
+
+	    (define (par2 this that)
+	      (cond ((and (eq? this '...) (eq? that '...)) #t)
+		    ((or (eq? this '...) (eq? that '...)) #f)
+		    ((and (number? this) (number? that))
+		     (= delta (- that this)))
+		    ((or (number? this) (number? that)) #f)
+		    ((not (= (length this) (length that))) #f)
+		    (else (and-all (map par2 this that))) ))
+
+	    (cond ((null? rest) cutsize)
+		  ((null? togo) (par1 subpat rest (+ delta cutsize)))
+		  ((not (par2 (car togo) (car rest))) #f)
+		  (else (par1 (cdr togo) (cdr rest) delta)) ))
+
+	  (par1 subpat rest cutsize) ))
+
+      ;; This is the body of findsize.
+      (cond ((= size len) (cons size #t))
+	    ((not (= (remainder len size) 0))
+	     (findsize (+ size 1) len))
+	    (else (let ((par (parallel? (firstn size pattern)
+					(safe-bfn size pattern) )))
+		    (if par
+			(cons size par)
+			(findsize (+ size 1) len) ))) ))
+
+    ;; This is the body of infinite.
+    (let* ((len (length pattern))
+	   (fs-val (findsize 1 len))
+	   (patsize (car fs-val))
+	   (cutsize (cdr fs-val)))
+
+      (define (make-recursion subpat combiner)
+	(let ((subgroup (regroup0 subpat)))
+	  (letrec
+	    ((f (lambda (ls)
+		  (if (too-short? (reg-minsize subgroup) ls)
+		      '()
+		      (combiner ((reg-function subgroup) ls)
+				(f (safe-bfn
+				    (if (number? cutsize)
+					cutsize
+					(reg-minsize subgroup))
+				    ls)) )) )))
+	    (reg-result f (reg-minsize subgroup)) )))
+
+      (if (= patsize 1)
+	  (make-recursion (car pattern) cons)
+	  (make-recursion (firstn patsize pattern) append) ) ))
+
+  (reg-function (regroup0 pattern)) )
+```
