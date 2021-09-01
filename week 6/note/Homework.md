@@ -17,11 +17,11 @@ Problem 1: Abelson & Sussman, exercises 2.74, 2.75, 2.76, 2.77, 2.79, 2.80, 2.81
   (define (get-record employee file)
     ...)
   ...
-  (put 'research 'record get-record)
+  (put 'record 'research get-record)
   ...)
 
 (define (get-record employee division-file)
-  ((get (type-tag division-file) 'record)
+  ((get 'record (type-tag division-file))
    employee
    (contents division-file)))
 ```
@@ -40,12 +40,12 @@ For this to work, each division's file must include a type tag specifying which 
   (define (get-salary record)
     ...)
   ...
-  (put 'research 'record get-record)
-  (put 'research 'salary get-salary)
+  (put 'record 'research get-record)
+  (put 'salary 'research get-salary)
   ...)
 
 (define (get-salary record)
-  ((get (type-tag record) 'salary)
+  ((get 'salary) (type-tag record)
    (contents record)))
 ```
 
@@ -81,8 +81,15 @@ For this to work, each division's file must include a type tag specifying which 
 
 Which organization would be most appropriate:
 
-1. For adding a new type, both data-directed style and message passing style work very well, but I think message passing is the most appropriate.
-2. For adding an new operation, both data-directed style and message passing style work very well, but I think message passing is the most appropriate.
+Conventional style is certainly INappropriate when many new types will be invented, because lots of existing procedures need to be modified.
+
+Similarly, message-passing is INappropriate when many new operators will be invented and applied to existing types.
+
+Data-directed programming is a possible solution in either case, and is probably the best choice if both new types and new operators are likely. It's also a good choice if the number of types or operators is large in the first place, whether or not new ones will be invented, because it minimizes the total number of procedures needed (leaving out the generic dispatch procedures for each type or operator) and thereby reduces the chances for error.
+
+As you'll see in chapter 3, message-passing style takes on new importance when a data object needs to keep track of local state. But you'll see later in the chapter (mutable data) that there are other solutions to the local state problem, too.
+
+Message-passing is also sometimes sensible when there are lots of types, each of which has its own separate set of operators with unique names, so that a data-directed array would be mostly empty.
 
 **2.77:**
 
