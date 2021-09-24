@@ -8,18 +8,20 @@
         random-count))
 
 (define-class (coke-machine number price)
-    (instance-vars (total-cents 0))
+    (instance-vars (total-cents 0) (cokes 0))
 
     (method (deposit cents)
         (set! total-cents (+ total-cents cents)))
 
     (method (coke)
-        (cond ((<= number 0) (error "Machine empty"))
+        (cond ((<= cokes 0) (error "Machine empty"))
               ((< total-cents price) (error "Not enough money"))
               (else (set! total-cents (- total-cents price))
+                    (set! cokes (- cokes 1))
                     total-cents)))
     (method (fill coke-number)
-        (set! number (+ number coke-number))))
+        (let ((new (+ cokes coke-number)))
+          (set! cokes (if (> new number) number new)))))
 
 (define-class (deck ordered-deck)
     (initialize (set! ordered-deck (shuffle ordered-deck)))
