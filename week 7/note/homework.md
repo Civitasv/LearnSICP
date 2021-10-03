@@ -68,6 +68,7 @@ EXTRA FOR EXPERTS:
 
 Probably the easiest example to understand is one in which BOTH parents inherit from the same grandparent, like this:
 
+```txt
                                 +------------+
                                 |   GP       |
                                 |            |
@@ -90,4 +91,6 @@ Probably the easiest example to understand is one in which BOTH parents inherit 
                                 |   Child    |
                                 +------------+
 
-The methods in the classes Parent1 and Parent2 override more generic methods in the grandparent GP.  Suppose we ask an instance of the Child class to use method A.  Which method should it use?  Since the Parent1 class doesn't have its own method A, it inherits the GP method A, which is the most generic version.  Method A in the Parent2 class is more specific, so probably a better choice for the Child class.
+```
+
+The methods in the classes Parent1 and Parent2 override more generic methods in the grandparent GP. Suppose we ask an instance of the Child class to use method A. Which method should it use? Since the Parent1 class doesn't have its own method A, it inherits the GP method A, which is the most generic version. Method A in the Parent2 class is more specific, so probably a better choice for the Child class.
