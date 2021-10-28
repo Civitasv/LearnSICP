@@ -1,0 +1,13 @@
+(define (make-account balance)
+  (define init balance)
+  (define (withdraw amount)
+    (set! balance (- balance amount)) balance)
+  (define (deposit amount)
+    (set! balance (+ balance amount)) balance)
+  (define (dispatch msg)
+    (cond
+      ((eq? msg 'withdraw) withdraw)
+      ((eq? msg 'balance) balance)
+      ((eq? msg 'init-balance) init)
+      ((eq? msg 'deposit) deposit) ) )
+  dispatch)
