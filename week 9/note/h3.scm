@@ -5,7 +5,7 @@
       (vector-set! vec j temp)))
   (define (loop vec index n)
     (cond ((= index n) vec)
-          ((> (vec-ref vec index) (vec-ref vec (+ index 1)))
+          ((> (vector-ref vec index) (vector-ref vec (+ index 1)))
            (swap index (+ index 1))
            (loop vec (+ index 1) n))
           (else (loop vec (+ index 1) n))))
