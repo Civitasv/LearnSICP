@@ -35,6 +35,26 @@ This procedure works fine when there are not two pointers point to the same pair
       (or (eq? item (car lst))
           (in? item (cdr lst)))))
 
+; Two complex solutions
+
+(define (count-pairs lst)
+  (define (helper pair pairlist count todo)
+    (if (or (not (pair? pair)) (memq pair pairlist))        ; New pair?
+        (if (null? todo) 				    ;  No. More pairs?
+            count                                           ;   No. Finished.
+            (helper (car todo) pairlist count (cdr todo)))  ;   Yes, pop one.
+        (helper (car pair) (cons pair pairlist) (+ count 1) ;  Yes, count it,
+                (cons (cdr pair) todo)))) 		    ;  do car, push cdr
+  (helper lst '() 0 '()))
+
+(define (count-pairs lst)
+  (define (helper pair pairlist count todo)
+    (if (or (not (pair? pair)) (memq pair pairlist))        ; New pair?
+	(todo pairlist count)				    ; No. Continue.
+        (helper (car pair) (cons pair pairlist) (+ count 1) ;  Yes, count it,
+		(lambda (pairlist count)		    ;  do car, push cdr
+		  (helper (cdr pair) pairlist count todo)))))
+  (helper lst '() 0 (lambda (pairlist count) count)))
 ```
 
 There are two aspects that we have to attention:
@@ -91,6 +111,26 @@ The `print-queue` procedure as follows:
             ((eq? m 'insert-proc) insert!)
             (else (error "Unkown operation: TABLE" m))))
     dispatch))
+
+; a greater solution
+(define (lookup keylist table)
+  (cond    ; *** the clause ((not table) #f) is no longer needed
+   ((null? keylist) (CAR table))	; ***
+   (else (LET ((RECORD (assoc (car keylist) (cdr table))))
+	   (IF (NOT RECORD)
+	       #F
+	       (lookup (cdr keylist) (CDR RECORD)))))))	; ***
+
+(define (insert! keylist value table)
+  (if (null? keylist)
+      (SET-CAR! table value)	; ***
+      (let ((record (assoc (car keylist) (cdr table))))
+	(if (not record)
+	    (begin
+	     (set-cdr! table
+		       (cons (LIST (CAR keylist) #F) (cdr table))) ; ***
+	     (insert! (cdr keylist) value (CDADR table)))
+	    (insert! (cdr keylist) value (CDR RECORD))))))	; ***
 ```
 
 **3.27:**
@@ -99,7 +139,7 @@ The trace is as follows:
 
 ![3.27](../images/3.27.png)
 
-That'll work if we had simply defined `memo-fib` to be `(memoize fib)`.
+That won't work if we had simply defined `memo-fib` to be `(memoize fib)` cause when we calculate f(5), we have to calculate f(4) and f(3), and so on, thus, there will have no prior knowledge.
 
 Problem 2: Vector questions
 

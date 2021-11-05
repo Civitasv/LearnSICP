@@ -8,6 +8,8 @@ Problem 1:
 
 `append! -> (b c d)`
 
+`append` will make a brand new pair, instead `append!` will mutate the existing pairs.
+
 Problem 2:
 
 It'll get an error cause `(cdr x)` is not a variable.
