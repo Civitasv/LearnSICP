@@ -71,9 +71,6 @@
 ;; Note: The 'send-usual-to-parent method is put in automatically by
 ;; define-class.
 
-(define-macro (usual . args)
-	     `(ask dispatch 'send-usual-to-parent . ,args))
-
 
 ;; DEFINE-CLASS:  Create a new class.
 
@@ -94,8 +91,15 @@
 ; that defines THING.  This text is used only by SHOW-CLASS, the
 ; procedure that lets you examine the result of the OOP-to-Scheme
 ; translation process.
+(define-syntax usual
+(syntax-rules ()
+((_ dispatch . args)
+(ask dispatch 'send-usual-to-parent . args))))
 
-(define-macro (define-class . body) (make-definitions body))
+(define-syntax define-class
+(syntax-rules ()
+((_ . body)
+(make-definitions `body))))
 
 (define (make-definitions form)
   (let ((definition (translate form)))
@@ -276,4 +280,4 @@
 	 (cons (car l) (obj-filter (cdr l) pred)))
 	(else (obj-filter (cdr l) pred))))
 
-(provide "obj")
+(define-class (person n))
