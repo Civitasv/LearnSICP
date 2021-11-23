@@ -1,4 +1,4 @@
-# CS 61 A Week 9 Lab
+# CS 61A Week 9 Lab
 
 Problem 1:
 
