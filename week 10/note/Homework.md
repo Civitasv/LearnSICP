@@ -93,9 +93,7 @@ Only step 3 involves concurrency problems.  Ben's proposal is to reduce the numb
 
 **3.44:**
 
-I think Louis Reasoner is right, cause if there are mutiple people concurrently transferring money among these accounts, there will be many reference on the balance, which will make wrong answer.
-
-But the `exchange` procedure is different from `transfer`, cause we need to calculate the **difference** between these two accounts, but we don't need to do that in the **transfer** procedure, so we don't need get two serializers simultaneously, instead we can get them separately.
+The `exchange` procedure is different from `transfer`, cause we need to calculate the **difference** between these two accounts, but we don't need to do that in the **transfer** procedure, so we don't need get two serializers simultaneously, instead we can get them separately.
 
 **3.46:**
 
