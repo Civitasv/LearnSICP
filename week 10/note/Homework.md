@@ -89,7 +89,7 @@ Ben is right.  The key point to understand is that there are three distinct step
 2. Create a serialized procedure.
 3. Invoke the serialized procedure.
 
-Only step 3 involves concurrency problems.  Ben's proposal is to reduce the number of times step 2 is taken, which is fine. 
+Only step 3 involves concurrency problems.  Ben's proposal is to reduce the number of times step 2 is taken, which is fine.
 
 **3.44:**
 
