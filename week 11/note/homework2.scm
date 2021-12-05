@@ -1,0 +1,11 @@
+(define (fract-stream lst)
+  (let ((numerator (car lst))
+        (denominator (cadr lst)))
+    (cons-stream (floor (/ (* numerator 10) denominator))
+                 (fract-stream (list (remainder (* numerator 10) denominator) denominator) ))))
+
+(define (approximation s numdigits)
+  (if (= numdigits 0)
+      '()
+      (cons (stream-car s)
+            (approximation (stream-cdr s) (- numdigits 1)))))
