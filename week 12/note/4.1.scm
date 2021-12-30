@@ -1,0 +1,13 @@
+(define (list-of-values exps env)
+  (if (no-operands? exps)
+      '()
+      (let ((val (eval (first-operand exps) env))
+            (rest (list-of-values (rest-operands exps) env)))
+        (cons val rest))))
+
+(define (list-of-values exps env)
+  (if (no-operands? exps)
+      '()
+      (let ((rest (list-of-values (rest-operands exps) env))
+            (val (eval (first-operand exps) env)))
+        (cons val rest))))

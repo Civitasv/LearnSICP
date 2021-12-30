@@ -4,11 +4,16 @@
 (define (cond-clauses exp)
   (cdr exp))
 
+(define (cond-recipient? clause)
+  (eq? (cadr  clause) '=>))
+
 (define (cond-predicate clause)
   (car clause))
 
 (define (cond-actions clause)
-  (cdr clause))
+  (if (cond-recipient? clause)
+      (list (list (caddr clause) (cond-predicate clause)))
+      (cdr clause)))
 
 (define (cond-else-clause? clause)
   (eq? (cond-predicate clause) 'else))

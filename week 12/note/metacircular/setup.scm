@@ -8,7 +8,6 @@
                               the-empty-environment)))
     (define-variable! 'true true initial-env)
     (define-variable! 'false false initial-env)
-    (define-variable! 'husen false initial-env)
     initial-env))
 
 (define the-global-environment (setup-environment))
