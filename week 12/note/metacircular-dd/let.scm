@@ -1,0 +1,25 @@
+(define (let? exp)
+  (tagged-list? exp 'let))
+
+(define (let-assignments exp)
+  (cadr exp))
+
+(define (let-body exp)
+  (cddr exp))
+
+(define (let->combination exp)
+  (display "LET->COMBINATION")
+  (let ((parameters (map car (let-assignments exp)))
+        (body (let-body exp))
+        (expressions (map cadr (let-assignments exp))))
+    (display parameters)
+    (newline)
+    (display body)
+    (newline)
+    (display expressions)
+    (newline)
+    (cons (make-lambda parameters body)
+          expressions)))
+
+(define (make-let assignments body)
+  (list 'let assignments body))
