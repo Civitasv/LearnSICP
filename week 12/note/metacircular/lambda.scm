@@ -11,10 +11,10 @@
 ;;; exp: the expression
 ;;; this function is used to get the body of the lambda expression.
 (define (lambda-body exp)
-  (caddr exp))
+  (cddr exp))
 
 ;;; parameters: the lambda parameters
 ;;; body: the lambda body
 ;;; this function is used to make a lambda expression.
 (define (make-lambda parameters body)
-  (list 'lambda parameters body))
+  (cons 'lambda (cons parameters body)))
