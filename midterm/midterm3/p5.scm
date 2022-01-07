@@ -1,0 +1,10 @@
+(define (histogram scores)
+  (let ((M (vector-max scores)))
+    (let ((res (make-vector (+ 1 M))))
+      (define (loop n)
+        (if (< n 0)
+            res
+            (begin (vector-set! res (vector-ref scores n)
+                                    (+ 1 (vector-ref res (vector-ref scores n))))
+                   (loop (- n 1)))))
+      (loop (- (vector-length scores) 1)))))

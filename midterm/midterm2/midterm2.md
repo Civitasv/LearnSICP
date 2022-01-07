@@ -56,7 +56,6 @@ b. the code is as below:
           (else #f)))
 ```
 
-
 ## Problem 3 (Tree Recursion)
 
 ```Scheme
@@ -98,5 +97,5 @@ b.
 (method (flavors)
   (map (LAMBDA (S) (ASK S 'FLAVOR)) scoops))
 ```
-c. `(ask my-cone 'add-scoop (instantiate vanilla))`
 
+c. `(ask my-cone 'add-scoop (instantiate vanilla))`
