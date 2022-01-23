@@ -32,6 +32,14 @@
 ;;; this function evaluates the predicate part of the if expression, if the result is
 ;;; true, then evaluates the consequent, otherwise it evaluates the alternative.
 (define (eval-if exp env)
-  (if (true? (actual-value (if-predicate exp) env))
+  (if (true? (meta-eval (if-predicate exp) env))
       (meta-eval (if-consequent exp) env)
       (meta-eval (if-alternative exp) env)))
+
+(define (analyze-if exp)
+  (let ((pproc (meta-analyze (if-predicate exp)))
+	(cproc (meta-analyze (if-consequent exp)))
+	(aproc (meta-analyze (if-alternative exp))))
+    (lambda (env) (if (true? (pproc env))
+		      (cproc env)
+		      (aproc env)))))

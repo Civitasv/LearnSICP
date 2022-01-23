@@ -1,0 +1,134 @@
+* CS 61A Week 13
+
+Topic: Analyzing evaluator, Lazy evaluator, MapReduce
+
+*Reading*: Therac paper in course reader.
+
+** Homework
+
+Problem 1:
+
+*4.22:*
+
+see metacircular-analyze.
+
+*4.23:*
+
+Alyssa's analyze-sequence is running in runtime, but the solution in the text unrolls this procedure.
+
+*4.24:*
+
+#+begin_src scheme
+  (define (loop n)
+    (if (> n 0)
+        (loop (- n 1))))
+#+end_src
+
+*4.25:*
+
+#+begin_src scheme
+  (define (unless condition usual-value exceptional-value)
+    (if condition exceptional-value usual-value))
+
+  (define (factorial n)
+    (unless (= n 1)
+      (* n (factorial (- n 1)))
+      1))
+#+end_src
+
+It cannot work with applicative-order cause =unless= is an ordinary procedure, the usual-value and exeptional-value will be calculated before invoking the predicate part, so will generate an endless recursion.
+
+It will work normal with normal-order.
+
+*4.26:*
+
+#+begin_src scheme
+  (unless? (make-if
+            (condition-part unless-exp)
+            (exeptional-part unless-exp)
+            (usual-part unless-exp)))
+#+end_src
+
+For Alyssa's side of the argument, we need a case in which it's useful to have a Scheme special form available as an ordinary procedure.  The only thing we can do with ordinary procedures but not with special forms is use them as arguments to higher-order procedures.  An example using UNLESS will be a little strained, so first we'll look at a more common situation involving a different special form, namely AND.  We'd like to be able to say
+
+#+begin_src scheme
+  (define (all-true? tf-list)
+    (accumulate and tf-list))
+#+end_src
+
+Now, here's the strained example using UNLESS:  Suppose we have a list of true-false values and we'd like to add up the number of true ones.  Here's a somewhat strange way to do it:
+
+#+begin_src scheme
+  (define zero-list (cons 0 '()))
+  (set-cdr! zero-list zero-list)
+
+  (define one-list (cons 1 '()))
+  (set-cdr! one-list one-list)
+
+  (define (howmany-true tf-list)
+    (apply + (map unless tf-list zero-list one-list)))
+#+end_src
+
+Zero-list is an infinite list of zeros; one-list is an infinite list of ones.  We make use of the fact that MAP's end test is that its first argument is empty, so MAP will return a list the same size as the argument tf-list.  For example, if tf-list is
+
+#+begin_src scheme
+  (#t #t #f #t)
+#+end_src
+
+then map will return =(1 1 0 1)=.
+
+*4.28:*
+
+#+begin_src scheme
+  (define (f g x)
+    (g x))
+  (f (lambda (x) (+ x 1)) 2)
+#+end_src
+
+*4.30:*
+
+a. with for-each, when we invoke =(proc ...)=, the expression =(actual-value (operator exp) env)= will get us actual value, so it works right.
+b. With the original =eval-sequence=, =(p1 1)= is =(1 2)=, =(p2 1)= is still =1= cause =SET!= will never happen. With Cy's version, both will be =(1 2)=.
+c. The change isn't as dramatic as it may seem.  Don't think that the original eval-sequence calls delay-it!  It calls EVAL, and most of the time EVAL does return a value, not a thunk.  In particular, a procedure call is carried out right away; it's only the *arguments* to the procedure that are delayed.  That's why Cy had to use a weird example in which a SET! expression is used as an argument to a procedure in order to get the wrong result.
+d. The combination of lazy evaluation and mutation in the same language is so confusing that programmers would be surprised no matter which choice we made.  That's why, in the real world, the languages that use normal order evaluation are *functional* languages in which there is no mutation or other side effects.  In such a language, there are no sequences (if there are no side effects, what would be the point?) and the problem doesn't arise. But if we really wanted to have a normal-order Scheme, we'd probably want to change the semantics of the language as little as possible -- programs that work in ordinary Scheme should work in lazy Scheme too.  So I think Cy is right.
+
+*4.32:*
+
+One possibility is to use doubly-lazy lists as an alternative to interleaving, when dealing with a naturally two-dimensional problem. For example, to get pairs of integers, we could say
+
+#+begin_src scheme
+(define (pairs a b)
+  (cons (map (lambda (x) (cons (car a) x)) b)
+	(pairs (cdr a) b)))
+#+end_src
+
+Then we could use this data structure with two-dimensional versions
+of the usual higher order procedures.  For example:
+
+#+begin_src scheme
+(define (2dfilter pred s)
+  (if (null? s)
+      '()
+      (cons (filter pred (car s))
+	    (2dfilter pred (cdr s)))))
+#+end_src
+
+*4.33:*
+
+Instead of =((quoted? exp) (text-of-quotation exp))=, we need a more complicated treatment to turn the ordinary lists of the underlying Scheme into lazy lists.
+
+#+begin_src scheme
+  ((quoted? exp) (process-quotation (text-of-quotation exp) env))
+  (define (process-quotation quoted env)
+    (if (pair? quoted)
+        (lazy-cons (process-quotation (car quoted) env)
+                   (process-quotation (cdr quoted) env)
+                   env)
+        quoted))
+
+  (define (lazy-cons x y env)
+    (make-procedure '(m) (list (list 'm x y)) env))
+#+end_src
+
+** TODO Extra for experts
+
