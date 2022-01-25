@@ -1,0 +1,19 @@
+* CS 61A Week 14 Lab
+
+Problem 1:
+
+*4.55:*
+
+#+begin_src scheme
+  (supervised ?who (Bitdiddle Ben))
+  (job ?job (accounting . ?name))
+  (address ?address (Slumerville . ?name))
+#+end_src
+
+*4.62:*
+
+#+begin_src scheme
+  (rule (last-pair (?x) (?x)))
+  (rule (last-pair (?y . ?z) ?x)
+        (last-pair ?z ?x))
+#+end_src

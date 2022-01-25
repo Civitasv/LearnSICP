@@ -1,0 +1,68 @@
+* CS 61A Week 14
+
+Topic: Logic programming
+
+*Reading:* Abelson & Sussman, Section 4.4.1-3
+
+** Homework
+
+Problem 1:
+
+*4.56:*
+
+#+begin_src scheme
+  ;; a
+  (and (supervisor ?x (Bitdiddle Ben))
+       (address ?x ?y))
+
+  ;; b
+  (and (salary ?name ?salary)
+       (salary (Bitdiddle Ben) ?ben-salary)
+       (lisp-value < ?salary ?ben-salary))
+
+  ;;c
+  (and (supervisor ?x ?y)
+       (not (job ?y (computer ?z)))
+       job ?y ?job)
+#+end_src
+
+*4.57:*
+
+#+begin_src scheme
+  (rule (same ?x ?x))
+  (rule (canreplace ?a ?b)
+        (and (or (and (job ?a ?job)
+                      (job ?b ?job))
+                 (and (job ?a ?job)
+                      (job ?b ?job2)
+                      (can-do-job ?job ?job2)))
+             (not (same ?a ?b))))
+
+  ;; a
+  (canreplace ?x (Fect Cy D))
+
+  ;; b
+  (and (canreplace ?x ?y)
+       (salary ?x ?s1)
+       (salary ?y ?s2)
+       (lisp-value > ?s1 ?s2))
+#+end_src
+
+*4.58:*
+
+#+begin_src scheme
+  (rule (sup-in-div ?p ?x)
+        (and (supervisor ?p ?boss)
+             (job ?boss (?x . ?z))))
+
+  (rule (big-shot ?person ?division)
+        (and (job ?person (?division . ?x))
+             (not (sup-in-div ?person ?division))))
+#+end_src
+
+*4.65:*
+
+To respond to a query, the query system generates a stream of frames which are then used to "instantiate" the query. In this case, the stream will include frames containing all bindings of ?middle-manager, ?person and ?x satisfying the body of the rule, and also with ?who bound to ?person. Since Warbucks supervises Bitdiddle and Scrooge, each of who manages other people, there will be more than one of these frames. Hence Warbucks appears more than once in the output.
+
+** TODO Extra for experts
+
