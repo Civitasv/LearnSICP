@@ -1,0 +1,169 @@
+* Final Examp
+
+** Problem 1 (Higher order procedures)
+
+#+begin_src scheme
+  (define (ordinal n)
+    (lambda (lst)
+      (list-ref lst (- n 1))))
+#+end_src
+
+** Problem 2 (Iterative and recursive processes)
+
+#+begin_src scheme
+  (define (count-evens ints)
+    (define (helper index n result)
+      (cond ((= index n) result)
+            ((even? (list-ref ints index))
+             (helper (+ 1 index) n (+ 1 result)))
+            (else (helper (+ 1 index) n result))))
+    (helper 0 (length ints) 0))
+#+end_src
+
+** Problem 3 (Abstract data types)
+
+#+begin_src scheme
+  (define (find-san-cities tree)
+    (if (null? (children tree))
+        (if (equal? (FIRST (datum tree)) 'San)
+            (list (datum tree))
+            '())
+        (san-helper (children tree))))
+
+  (define (san-helper forest)
+    (if (null? forest)
+        '()
+        (append (find-san-cities (car forest))
+                (san-helper (cdr forest)))))
+#+end_src
+
+** Problem 4 (Trees)
+
+#+begin_src txt
+      3
+     / \
+    /   \
+   5     4
+  / \   / \
+ 6   5 9   7
+#+end_src
+
+** Problem 5 (Generic operators)
+
+We can convert one format to another by using a middle format used as a medium.
+
+** Problem 6 (Object oriented programming)
+
+#+begin_src scheme
+  (define (make-line-obj text)
+    (let ((data text))
+      (lambda (msg)
+        (cond ((equal? msg 'next)
+               (let ((result (car data)))
+                 (set! data (cdr data))
+                 result))
+              ((equal? msg 'empty?)
+               (null? data))
+              ((equal? msg 'put-back)
+               (lambda (tt)
+                 (set! data (cons tt data))
+                 'okay))))))
+
+#+end_src
+
+** Problem 7 (Environment diagrams)
+
+In LEXICAL SCOPE, =y-->5= will point to =x-->3= env, and z will be 8.
+
+In DYNAMIC SCOPE, =y-->5= will point to global, and z will be 6.
+
+** Problem 8 (Mutation)
+
+#+begin_src scheme
+  (define (interleave! lst1 lst2)
+    (define (helper lst1 lst2)
+      (unless (or (null? lst1)
+                  (null? lst2))
+        (let ((remains (cdr lst1)))
+          (set-cdr! lst1 lst2)
+          (interleave! lst2 remains))))
+    (cond ((null? lst1) lst2)
+          ((null? lst2) lst1)
+          (else (helper lst1 lst2)
+                lst1)))
+#+end_src
+
+** Problem 9 (Concurrency)
+
+a. x is -2, -1, 0, 1 or 2
+b. x is -1, 0 or 1
+
+** Problem 10 (MapReduce)
+
+(A). ((ba . 6) (bi . 14) (bil . 7) (bo . 0))
+(B). ERROR
+
+** Problem 11 (Streams)
+
+a. (1 2 3 4 5 6 7 8 9 10)
+b. (() (1) (2 1) (3 2 1) (4 3 2 1))
+
+** Problem 12 (Lazy evaluator)
+
+- =+= will be executed at point B
+- =*= will be executed at point B
+- =-= will be executed at point C
+  
+** Problem 13 (Logic programming)
+
+#+begin_src scheme
+  (rule (depth ?x ())
+        (not (pair ?x)))
+  (rule (depth (?x . ?y) ?z)
+        (and (depth ?x ?dep-car)
+             (depth ?y ?dep-car)
+             (max (a . ?dep-car) ?dep-cdr ? z)))
+#+end_src
+
+** Problem 14 (Metacircular evaluator)
+
+#+begin_src scheme
+  (define (meta-apply procedure arguments)
+    (cond ((primitive-procedure? procedure)
+           (apply-primitive-procedure procedure arguments))
+          ((compound-procedure? procedure)
+           (eval-sequence
+            (procedure-body procedure)
+            (extend-environment
+             (JUST-NAMES (procedure-parameters procedure))
+             (USE-DEFAULTS (PROCEDURE-PARAMETERS PROCEDURE) arguments)
+             (procedure-environment procedure))))
+          (else (error "Unknown procedure type: APPLY" procedure))))
+
+  (DEFINE (JUST-NAMES VARS)
+    (MAP
+     (LAMBDA
+      (X)
+      (IF (PAIR? x)
+          (CAR X)
+          X))
+     VARS))
+
+  (DEFINE (USE-DEFAULTS VARS VALS)
+    (DEFINE (HELPER VARS)
+      (COND ((NULL? VARS) '())
+            ((PAIR? (CAR VARS))
+             (CONS (CADAR VARS) (HELPER (CDR VARS))))
+            (ELSE '())))
+
+    (CONS ((NULL? VARS) VALS)
+          ((NULL? VALS) (HELPER VARS))
+          (ELSE (CONS (CAR VALS) (USE-DEFAULTS (CDR VARS) (CDR VALS))))))
+  ((application? exp)
+   (meta-apply (meta-eval (operator exp) env)
+               (list-of-values-optional
+                (operands exp)
+                (procedure-paramters
+                 (meta-eval (operator exp env))) ;; optional args
+                env)))
+#+end_src

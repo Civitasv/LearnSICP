@@ -44,13 +44,7 @@
             (meta-apply (meta-eval (operator exp) env)
 			(list-of-values (operands exp) env)))
            (else 
-            (error "Unknown expression type: EVAL" exp))))
-   (lambda (a b c)
-     (display a)
-     (display ",")
-     (display b)
-     (display ",")
-     (display c))))
+            (error "Unknown expression type: EVAL" exp))))))
 
 (define (meta-apply procedure arguments)
   (cond ((primitive-procedure? procedure)
@@ -59,7 +53,24 @@
          (eval-sequence
            (procedure-body procedure)
            (extend-environment
-             (procedure-parameters procedure)
-             arguments
+             (JUST-NAMES (procedure-parameters procedure))
+             (USE-DEFAULTS (PROCEDURE-PARAMETERS PROCEDURE) arguments)
              (procedure-environment procedure))))
         (else (error "Unknown procedure type: APPLY" procedure))))
+
+(DEFINE (JUST-NAMES VARS)
+  (MAP (LAMBDA (X)
+               (IF (PAIR? x)
+                   (CAR X)
+                   X))
+       VARS))
+(DEFINE (USE-DEFAULTS VARS VALS)
+  (DEFINE (HELPER VARS)
+    (COND ((NULL? VARS) '())
+          ((PAIR? (CAR VARS))
+           (CONS (CADAR VARS) (HELPER (CDR VARS))))
+          (ELSE '())))
+
+  (CONS ((NULL? VARS) VALS)
+        ((NULL? VALS) (HELPER VARS))
+        (ELSE (CONS (CAR VALS) (USE-DEFAULTS (CDR VARS) (CDR VALS))))))

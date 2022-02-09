@@ -1,0 +1,12 @@
+(define (find-san-cities tree)
+  (if (null? (children tree))
+      (if (equal? (datum (car tree)) 'San)
+          (list (car tree))
+          '())
+      (san-helper (children tree))))
+
+(define (san-helper forest)
+  (if (null? forest)
+      '()
+      (append (find-san-cities (car forest))
+              (san-helper (cdr forest)))))
